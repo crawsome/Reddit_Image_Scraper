@@ -205,7 +205,9 @@ def get_client_info():
     if not os.path.exists('config.ini'):
         with open('config.ini', 'w') as f:
             log('config.ini template created. Please paste in your client secret. (And RTM)')
-            f.write("""[ALPHA]
+            f.write("""[DEFAULT]
+ext=.webm, .gif, .avi, .mp4, .jpg, .png', .mov, .ogg, .wmv, .mp2, .mp3, .mkv'
+[ALPHA]
 client_id=PASTE ID HERE
 client_secret=PASTE SECRET HERE
 query_limit=2000
@@ -220,10 +222,11 @@ minimum_file_size_kb=12.0""")
     ratelimit_sleep = config["ALPHA"]["ratelimit_sleep"]
     failure_sleep = config["ALPHA"]["failure_sleep"]
     minimum_file_size_kb = config["ALPHA"]["minimum_file_size_kb"]
-    return id, secret, int(query_limit), int(ratelimit_sleep), int(failure_sleep), float(minimum_file_size_kb)
+    ext=config["ALPHA"]["ext"]
+    return id, secret, int(query_limit), int(ratelimit_sleep), int(failure_sleep), float(minimum_file_size_kb), ext.split(',')
 
 
-def is_media_file(uri):
+def is_media_file(uri, extensions):
     # print('Original Link:' + img_link) # enable this if you want to log the literal URLs it sees
     regex = '([.][\w]+)$'
     re.compile(regex)
@@ -233,7 +236,7 @@ def is_media_file(uri):
     ext = uri[-4:]
     if t:
         ext = t.group()
-    if ext in ('.webm', '.gif', '.avi', '.mp4', '.jpg', '.png', '.mov', '.ogg', '.wmv', '.mp2', '.mp3', '.mkv'):
+    if ext in extensions:
         return True
     else:
         return False
@@ -400,7 +403,7 @@ def download_img(img_url, img_title, file_loc, sub, ratelimit_sleep: int, failur
         return 1
 
 
-def read_img_links(submissions, url_list, user_submissions):
+def read_img_links(submissions, url_list, user_submissions, extensions):
     sub = submissions.lower()
     if user_submissions:
         if not os.path.exists('./users/{}'.format(sub)):
@@ -426,7 +429,7 @@ def read_img_links(submissions, url_list, user_submissions):
             # print(link[-4:])
             # print('gfycat found:{}'.format(link))
             link = link + '.gif'
-        if not is_media_file(link):
+        if not is_media_file(link, extensions):
             continue
 
         file_name = link.split('/')[-1]
@@ -457,8 +460,8 @@ def read_img_links(submissions, url_list, user_submissions):
 
 if __name__ == '__main__':
     # Get client info
-    ClientInfo.id, ClientInfo.secret, query_lookup_limit, ratelimit_sleep, failure_sleep, minimum_file_size_kb = get_client_info()
-
+    ClientInfo.id, ClientInfo.secret, query_lookup_limit, ratelimit_sleep, failure_sleep, minimum_file_size_kb, extensions = get_client_info()
+    print(extensions)
     # Create project directories
     create_directories()
 
@@ -492,7 +495,7 @@ if __name__ == '__main__':
         if url_list:
             try:
                 log('{} images found on {}'.format(len(url_list), redditor))
-                count, status, already_here = read_img_links(redditor, url_list, True)
+                count, status, already_here = read_img_links(redditor, url_list, True, extensions)
 
                 if status == 1:
                     log(
@@ -525,7 +528,7 @@ if __name__ == '__main__':
         if url_list:
             try:
                 log('{} images found on {}'.format(len(url_list), subreddit))
-                count, status, already_here = read_img_links(subreddit, url_list, 0)
+                count, status, already_here = read_img_links(subreddit, url_list, 0, extensions)
 
                 if status == 1:
                     log(
