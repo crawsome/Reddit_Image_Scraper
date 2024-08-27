@@ -233,7 +233,7 @@ def is_media_file(uri):
     ext = uri[-4:]
     if t:
         ext = t.group()
-    if ext in ('.webm', '.gif', '.avi', '.mp4', '.jpg', '.png', '.mov', '.ogg', '.wmv', '.mp2', '.mp3', '.mkv'):
+    if ext in ('.webm', '.gif', '.avi', '.mp4', '.jpg', '.jpeg', '.png', '.mov', '.ogg', '.wmv', '.mp2', '.mp3', '.mkv'):
         return True
     else:
         return False
