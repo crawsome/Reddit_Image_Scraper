@@ -35,6 +35,9 @@ Make sure to have installed these libraries before executing the program.
 * [Urllib](https://docs.python.org/3.0/library/urllib.request.html)
 * Blake3
 
+These can be installed with the command
+```python -m pip install -r requirements.txt```
+
 ## First time running
 
 ### Run it once

@@ -478,7 +478,7 @@ if __name__ == '__main__':
     redditors_file = open('./users.txt', 'r')
 
     for redditor in redditors_file.readlines():
-        if '#' in redditor:
+        if '#' in redditor or not redditor.strip():
             continue
         redditor = redditor.strip('\n').lower()
         log('Starting Retrieval from: ' + redditor)
@@ -511,7 +511,7 @@ if __name__ == '__main__':
         delete_duplicates_by_hash('./users/{}'.format(redditor))
 
     for subreddit in subs_file.readlines():
-        if '#' in subreddit:
+        if '#' in subreddit or not subreddit.strip():
             continue
         subreddit = subreddit.strip('\n').lower()
         log('Starting Retrieval from: /r/' + subreddit)
